@@ -1,6 +1,5 @@
-package com.example.miom.data
+package com.example.miom.composables
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ListItem
@@ -11,7 +10,7 @@ import androidx.compose.ui.Modifier
 class Recipes {
 
     @Composable
-    public fun RecipesList(
+    fun RecipesList(
         modifier: Modifier = Modifier,
         onRecipeSelected: (recipe: Recipe) -> Unit
     ){
@@ -31,6 +30,10 @@ class Recipes {
                 )
             }
         }
+    }
+
+    fun getRecipes(): List<Recipe> {
+        return recipes
     }
 }
 

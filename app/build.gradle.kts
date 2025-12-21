@@ -39,6 +39,14 @@ android {
     buildFeatures {
         compose = true
     }
+
+    packaging {
+        resources {
+            excludes += "kotlin/reflect/reflect.kotlin_builtins"
+            excludes += "kotlin/internal/internal.kotlin_builtins"
+
+        }
+    }
 }
 
 dependencies {
@@ -52,8 +60,11 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
 
+
     implementation("androidx.compose.material:material-icons-extended")
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.androidx.compose.foundation)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -63,4 +74,8 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
+}
+
+configurations.all {
+    exclude(group = "com.google.code.findbugs", module = "jsr305")
 }
