@@ -6,37 +6,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-
-class Recipes {
-
-    @Composable
-    fun RecipesList(
-        modifier: Modifier = Modifier,
-        onRecipeSelected: (recipe: Recipe) -> Unit
-    ){
-        LazyColumn() {
-            items(recipes){recipe ->
-                ListItem(
-                    headlineContent = {
-                        Text(
-                            text = recipe.name
-                        )
-                    },
-                    supportingContent = {
-                        Text(
-                            text = recipe.description
-                        )
-                    }
-                )
-            }
-        }
-    }
-
-    fun getRecipes(): List<Recipe> {
-        return recipes
-    }
-}
-
 data class Recipe(
     val name: String,
     val description: String
@@ -64,3 +33,10 @@ private val recipes: List<Recipe> = listOf(
     Recipe(name = "Lemon Meringue Pie", description = "Tangy lemon pie topped with fluffy meringue."),
     Recipe(name = "Chocolate Mousse", description = "Light and airy chocolate dessert.")
 )
+
+class Recipes {
+
+    fun getRecipes(): List<Recipe> {
+        return recipes
+    }
+}
