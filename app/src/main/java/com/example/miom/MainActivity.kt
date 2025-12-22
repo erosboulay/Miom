@@ -26,6 +26,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.NavigationDrawerItemDefaults
+import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -77,6 +80,14 @@ fun MiomApp() {
 
     var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.RECIPES) }
 
+    val myItemColors = NavigationSuiteDefaults.itemColors(
+        navigationBarItemColors = NavigationBarItemDefaults.colors(
+            indicatorColor = Green,
+            selectedIconColor = GreyDarkest,
+            unselectedIconColor = GreyDarkest
+        )
+    )
+
     NavigationSuiteScaffold(
         navigationSuiteItems = {
             AppDestinations.entries.forEach {
@@ -88,12 +99,13 @@ fun MiomApp() {
                         )
                     },
                     selected = it == currentDestination,
-                    onClick = { currentDestination = it }
+                    onClick = { currentDestination = it },
+                    colors = myItemColors
                 )
             }
         },
         navigationSuiteColors = NavigationSuiteDefaults.colors(
-            navigationBarContainerColor = GreyLight
+            navigationBarContainerColor = GreyLight,
         )
     ) {
         Scaffold(modifier = Modifier.fillMaxSize(), containerColor = GreyLighter) { innerPadding ->
