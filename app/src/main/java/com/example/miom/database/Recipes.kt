@@ -1,11 +1,5 @@
-package com.example.miom.composables
+package com.example.miom.database
 
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 data class Recipe(
     val name: String,
     val description: String
