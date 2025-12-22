@@ -4,6 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -63,48 +69,71 @@ fun MiomApp() {
         )
     )
 
-    if (currentDestination == AppDestinations.RECIPE_CREATION) {
-        RecipeCreationScreen(onBack = { currentDestination = AppDestinations.RECIPES })
-    } else {
-        NavigationSuiteScaffold(
-            navigationSuiteItems = {
-                AppDestinations.entries.filter { it.showInNavBar }.forEach {
-                    item(
-                        icon = {
-                            Icon(
-                                it.icon,
-                                contentDescription = it.label
-                            )
-                        },
-                        selected = it == currentDestination,
-                        onClick = { currentDestination = it },
-                        colors = myItemColors
-                    )
-                }
-            },
-            navigationSuiteColors = NavigationSuiteDefaults.colors(
-                navigationBarContainerColor = GreyLight,
-            )
-        ) {
-            Scaffold(modifier = Modifier.fillMaxSize(), containerColor = GreyLighter) { innerPadding ->
-                Column(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .padding(20.dp, 20.dp, 20.dp, 0.dp)
-                        .fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-
-                    when (currentDestination) {
-                        AppDestinations.RECIPES -> RecipesScreen(
-                            onAddRecipe = { currentDestination = AppDestinations.RECIPE_CREATION }
+    AnimatedContent(
+        targetState = currentDestination,
+        transitionSpec = {
+            if (targetState == AppDestinations.RECIPE_CREATION) {
+                // Slide up when entering creation screen
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(400)
+                ) togetherWith fadeOut(animationSpec = tween(400))
+            } else if (initialState == AppDestinations.RECIPE_CREATION) {
+                // Slide down when going back from creation screen
+                fadeIn(animationSpec = tween(400)) togetherWith slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(400)
+                )
+            } else {
+                // Default crossfade for other transitions
+                fadeIn(animationSpec = tween(200)) togetherWith fadeOut(animationSpec = tween(200))
+            }
+        },
+        label = "ScreenTransition"
+    ) { state ->
+        if (state == AppDestinations.RECIPE_CREATION) {
+            RecipeCreationScreen(onBack = { currentDestination = AppDestinations.RECIPES })
+        } else {
+            NavigationSuiteScaffold(
+                navigationSuiteItems = {
+                    AppDestinations.entries.filter { it.showInNavBar }.forEach {
+                        item(
+                            icon = {
+                                Icon(
+                                    it.icon,
+                                    contentDescription = it.label
+                                )
+                            },
+                            selected = it == state,
+                            onClick = { currentDestination = it },
+                            colors = myItemColors
                         )
-                        AppDestinations.GROCERIES -> GroceriesScreen()
-                        else -> {}
+                    }
+                },
+                navigationSuiteColors = NavigationSuiteDefaults.colors(
+                    navigationBarContainerColor = GreyLight,
+                )
+            ) {
+                Scaffold(modifier = Modifier.fillMaxSize(), containerColor = GreyLighter) { innerPadding ->
+                    Column(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .padding(20.dp, 20.dp, 20.dp, 0.dp)
+                            .fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+
+                        when (state) {
+                            AppDestinations.RECIPES -> RecipesScreen(
+                                onAddRecipe = { currentDestination = AppDestinations.RECIPE_CREATION }
+                            )
+                            AppDestinations.GROCERIES -> GroceriesScreen()
+                            else -> {}
+                        }
+
                     }
 
                 }
-
             }
         }
     }

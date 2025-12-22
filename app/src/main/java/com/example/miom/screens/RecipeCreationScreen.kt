@@ -15,11 +15,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import com.example.miom.composables.Title
 import com.example.miom.ui.theme.GreyLighter
+import com.example.miom.ui.theme.MiomTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,5 +61,13 @@ fun RecipeCreationScreen(onBack: () -> Unit) {
                 modifier = Modifier.padding(top = 16.dp)
             )
         }
+    }
+}
+
+@PreviewScreenSizes
+@Composable
+fun RecipeCreationScreenPreview() {
+    MiomTheme {
+        RecipeCreationScreen(onBack = {})
     }
 }
