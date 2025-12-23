@@ -1,6 +1,7 @@
 package com.example.miom.screens
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -33,9 +34,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
 import com.example.miom.R
 import com.example.miom.composables.Title
 import com.example.miom.database.Recipes
@@ -44,15 +47,15 @@ import com.example.miom.ui.theme.GreyDark
 import com.example.miom.ui.theme.GreyDarkest
 import com.example.miom.ui.theme.GreyLight
 import com.example.miom.ui.theme.GreyLightest
+import java.io.File
 
 @Composable
 fun RecipesScreen(onAddRecipe: () -> Unit) {
 
     Box(modifier=Modifier.fillMaxSize()){
-        val recipeData = Recipes()
         val focusManager = LocalFocusManager.current
         var searchQuery by remember { mutableStateOf("") }
-        val filteredItems = recipeData.getRecipes().filter { it.name.contains(searchQuery, ignoreCase = true) }
+        val filteredItems = Recipes.getRecipes().filter { it.name.contains(searchQuery, ignoreCase = true) }
 
         BackHandler(enabled = true) {
             if (searchQuery.isNotEmpty()) {
@@ -111,11 +114,23 @@ fun RecipesScreen(onAddRecipe: () -> Unit) {
                         ) {
 
                             // TODO: Use user defined image if it exists, otherwise use default icon
-                            Icon(
-                                painter = painterResource(id = R.drawable.image),
-                                contentDescription = "a placeholder",
-                                modifier = Modifier.size(96.dp)
-                            )
+                            if (recipe.url != null) {
+                                val context = LocalContext.current
+                                val file = File(context.filesDir, "Recipe/${recipe.url}")
+                                Image(
+                                    painter = rememberAsyncImagePainter(file),
+                                    contentDescription = "Recipe Image",
+                                    modifier = Modifier.size(96.dp)
+                                )
+
+                            }
+                            else {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.image),
+                                    contentDescription = "a placeholder",
+                                    modifier = Modifier.size(96.dp)
+                                )
+                            }
 
                             Spacer(modifier = Modifier.width(10.dp))
 

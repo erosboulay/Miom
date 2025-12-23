@@ -66,6 +66,8 @@ dependencies {
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.animation)
+    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("com.github.yalantis:ucrop:2.2.8")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

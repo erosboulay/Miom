@@ -30,17 +30,24 @@ private val recipes: MutableList<Recipe> = mutableListOf<Recipe>(
 )
 
 class Recipes {
+    companion object {
+        fun getRecipes(): List<Recipe> {
+            return recipes
+        }
 
-    fun getRecipes(): List<Recipe> {
-        return recipes
+        // TODO: Implement this
+        fun updateRecipe(index: Int) {
+            recipes[index] = recipes[index].copy(
+                name = "New name",
+                description = "New description",
+                url = "New url"
+            )
+        }
+
+        fun addRecipe(name: String, description: String, url: String? = null){
+            recipes.add(Recipe(name = name, description = description, url = url))
+        }
+
     }
-
-    fun updateRecipe(index: Int){
-        recipes[index] = recipes[index].copy(
-            name = "New name",
-            description = "New description"
-        )
-    }
-
 
 }

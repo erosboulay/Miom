@@ -1,7 +1,11 @@
 package com.example.miom.screens
 
+import android.net.Uri
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -9,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,6 +24,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.DeleteOutline
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -30,29 +37,56 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
+import com.example.miom.database.Images.Companion.saveImageToInternalStorage
+import com.example.miom.database.Recipes
 import com.example.miom.ui.theme.GreyDark
 import com.example.miom.ui.theme.GreyDarkest
 import com.example.miom.ui.theme.GreyLighter
+import com.example.miom.ui.theme.GreyLightest
 import com.example.miom.ui.theme.MiomTheme
 import com.example.miom.ui.theme.Typography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeCreationScreen(onBack: () -> Unit) {
+
+    var recipeName by remember { mutableStateOf("") }
+    var recipeDescription by remember { mutableStateOf("") }
+    val selectedImageUri = remember { mutableStateOf<Uri?>(null) }
+
+    val context = LocalContext.current
+
+
+    val onAddRecipe = {
+        // Now you can access everything!
+        println("Saving Recipe: $recipeName")
+        println("Description: $recipeDescription")
+        println("Image: $selectedImageUri")
+
+        val imageName = saveImageToInternalStorage(context, selectedImageUri.value)
+        Recipes.addRecipe(recipeName, recipeDescription, imageName)
+
+        onBack() // Go back after saving
+    }
 
     MiomTheme {
         // Handles the system back button
@@ -69,6 +103,14 @@ fun RecipeCreationScreen(onBack: () -> Unit) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Back"
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = onAddRecipe) {  // <-- Add this
+                            Icon(
+                                imageVector = Icons.Default.Done,  // Done icon
+                                contentDescription = "Done"
                             )
                         }
                     },
@@ -92,19 +134,20 @@ fun RecipeCreationScreen(onBack: () -> Unit) {
                     Modifier
                         .padding(0.dp, 0.dp)
                         .focusRequester(focusRequester),
-                    Typography.titleLarge)
-
+                    Typography.titleLarge,
+                    recipeName,
+                    onValueChange = { recipeName = it })
                 HorizontalDivider(color = Color.Transparent, thickness = 15.dp)
 
-                AddImageBox(){}
-
+                AddImagePicker(selectedImageUri)
                 HorizontalDivider(color = Color.Transparent, thickness = 15.dp)
 
                 CustomTextField(
                     "Start typing your recipe",
                     Modifier.fillMaxSize(),
-                    Typography.bodyLarge)
-
+                    Typography.bodyLarge,
+                    recipeDescription,
+                    onValueChange = { recipeDescription = it })
 
                 LaunchedEffect(Unit) {
                     focusRequester.requestFocus()
@@ -115,6 +158,8 @@ fun RecipeCreationScreen(onBack: () -> Unit) {
     }
 }
 
+
+
 @PreviewScreenSizes
 @Composable
 fun RecipeCreationScreenPreview() {
@@ -123,14 +168,12 @@ fun RecipeCreationScreenPreview() {
     }
 }
 
-
 @Composable
-fun CustomTextField(hint: String, modifier: Modifier = Modifier, style: TextStyle) {
-    var text by remember { mutableStateOf("") }
+fun CustomTextField(hint: String, modifier: Modifier = Modifier, style: TextStyle, text: String, onValueChange: (String) -> Unit) {
 
     BasicTextField(
         value = text,
-        onValueChange = { text = it },
+        onValueChange = onValueChange,
         modifier = modifier
             .fillMaxWidth(),
         textStyle = style,
@@ -175,4 +218,44 @@ fun AddImageBox(
             Text("Add Photo", fontSize = 16.sp, color = GreyDarkest)
         }
     }
+}
+
+@Composable
+fun AddImagePicker(selectedImageUri: MutableState<Uri?>) {
+    // Launcher for picking an image
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        // Called when user selects an image
+        selectedImageUri.value = uri
+    }
+
+    if (selectedImageUri.value == null){
+        AddImageBox(onClick = {
+            launcher.launch("image/*") // Open image picker for images
+        })
+    }
+    else{
+        Box {
+
+            Box(modifier = Modifier.background(GreyDarkest)){
+                Icon(imageVector = Icons.Default.DeleteOutline,
+                    contentDescription = "Delete",
+                    tint = GreyLightest,
+                    modifier = Modifier)
+            }
+
+            Image(
+                painter = rememberAsyncImagePainter(selectedImageUri.value),
+                contentDescription = "Selected Image",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(15.dp)),
+                contentScale = ContentScale.Crop
+            )
+
+        }
+    }
+
 }
