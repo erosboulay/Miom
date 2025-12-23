@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -61,7 +62,6 @@ import com.example.miom.database.Recipes
 import com.example.miom.ui.theme.GreyDark
 import com.example.miom.ui.theme.GreyDarkest
 import com.example.miom.ui.theme.GreyLighter
-import com.example.miom.ui.theme.GreyLightest
 import com.example.miom.ui.theme.MiomTheme
 import com.example.miom.ui.theme.Typography
 
@@ -200,7 +200,6 @@ fun AddImageBox(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .background(Color.Transparent)
             .border(BorderStroke(1.dp, GreyDarkest), shape = RoundedCornerShape(15.dp))
             .clickable { onClick() }, // handle click
         contentAlignment = Alignment.Center
@@ -236,26 +235,42 @@ fun AddImagePicker(selectedImageUri: MutableState<Uri?>) {
         })
     }
     else{
-        Box {
-
-            Box(modifier = Modifier.background(GreyDarkest)){
-                Icon(imageVector = Icons.Default.DeleteOutline,
-                    contentDescription = "Delete",
-                    tint = GreyLightest,
-                    modifier = Modifier)
-            }
-
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .clip(RoundedCornerShape(15.dp))
+        ) {
+            // Image
             Image(
                 painter = rememberAsyncImagePainter(selectedImageUri.value),
                 contentDescription = "Selected Image",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .clip(RoundedCornerShape(15.dp)),
+                modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
 
+            // Delete icon with semi-transparent background and margin
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)           // position top-right
+                    .padding(12.dp)                     // margin from edges
+                    .size(32.dp)                        // size of the circle
+                    .background(
+                        color = Color.Black.copy(alpha = 0.5f),
+                        shape = CircleShape
+                    )
+                    .clickable { selectedImageUri.value = null },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.DeleteOutline,
+                    contentDescription = "Delete",
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)      // size of the icon inside the circle
+                )
+            }
         }
+
     }
 
 }
