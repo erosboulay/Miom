@@ -2,10 +2,11 @@ package com.example.miom.database
 
 data class Recipe(
     val name: String,
-    val description: String
+    val description: String,
+    val url: String? = null,
 )
 
-private val recipes: List<Recipe> = listOf(
+private val recipes: MutableList<Recipe> = mutableListOf<Recipe>(
     Recipe(name = "Strawberry Shortcake", description = "A strawberry and cream based treat."),
     Recipe(name = "Chocolate Cake", description = "Rich and moist chocolate cake."),
     Recipe(name = "Apple Pie", description = "Classic apple pie with a flaky crust."),
@@ -33,4 +34,13 @@ class Recipes {
     fun getRecipes(): List<Recipe> {
         return recipes
     }
+
+    fun updateRecipe(index: Int){
+        recipes[index] = recipes[index].copy(
+            name = "New name",
+            description = "New description"
+        )
+    }
+
+
 }

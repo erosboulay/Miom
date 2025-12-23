@@ -12,6 +12,7 @@ material3 = "1.4.0"
 appcrawlerPlatform = "0.0.1-alpha03"
 foundationLayout = "1.10.0"
 foundation = "1.10.0"
+animation = "1.10.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -33,6 +34,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3",
 appcrawler-platform = { group = "com.google.android.appcrawler", name = "appcrawler-platform", version.ref = "appcrawlerPlatform" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "animation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

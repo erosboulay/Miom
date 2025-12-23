@@ -6,12 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -72,21 +70,6 @@ fun MiomApp() {
         )
     )
 
-    // Animate the dimming alpha
-    val isCreating = currentDestination == AppDestinations.RECIPE_CREATION
-    val dimAlpha by animateFloatAsState(
-        targetValue = if (isCreating) 0.6f else 0f,
-        animationSpec = tween(0),
-        label = "dimAlpha"
-    )
-
-    if (dimAlpha > 0f) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = dimAlpha))
-        )
-    }
 
     Box {
         AnimatedContent(
