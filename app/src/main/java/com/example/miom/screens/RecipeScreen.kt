@@ -121,6 +121,7 @@ fun RecipesScreen(onAddRecipe: () -> Unit) {
                                     painter = rememberAsyncImagePainter(file),
                                     contentDescription = "Recipe Image",
                                     modifier = Modifier.size(96.dp)
+                                        .clip(shape = RoundedCornerShape(15.dp))
                                 )
 
                             }
